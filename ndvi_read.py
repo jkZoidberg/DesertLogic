@@ -29,6 +29,4 @@ geemap.ee_export_image(
     timeout=600 
 )
 
-print(f"[OK] 本地已保存: {out_tif.resolve()}")
-#把 0–1 的浮点 NDVI 放大到 0–10000，并转为 int16。体积立刻减半以上，通常就能过 48 MiB 限制。
-#读取时记得除以 10000 恢复到 0–1：ndvi = rxr.open_rasterio(...)/10000.0
+print(f"[OK] saved: {out_tif.resolve()}")
