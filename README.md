@@ -25,9 +25,8 @@ bash
 
 ## Data Sources (Open Access)
 - **TerraClimate** – monthly climate data (precipitation, PET, temperature, etc.).  
-- **MODIS MOD13A3** – monthly NDVI (vegetation index).  
-- **Optional DEM (e.g., SRTM)** – if you extend to terrain/landform analyses.  
-*Large raw datasets are **not** included in the repo. Scripts/notes indicate how to obtain them.*
+- **MODIS MOD13A3 NDVI (GEE)** – monthly NDVI (vegetation index).  
+- **Altimeter Corrected Elevations, Version 2 (ACE2)** – Digital Elevation Model (DEM)*
 
 Citation
 If this repository supports your research, please cite:
@@ -39,7 +38,7 @@ License
 Distributed under the Apache-2.0 license. See LICENSE for details.
 
 Acknowledgements
-Thanks to the providers of MODIS MOD13A3 NDVI (GEE), ACE2 DEM, TerraClimate, and to the open-source Python ecosystem (xarray/rioxarray/GDAL, etc.). This work forms part of the author’s MSc dissertation at the University of Leeds.
+Thanks to the providers of MODIS MOD13A3 NDVI (GEE), Altimeter Corrected Elevations, Version 2 (ACE2), TerraClimate, and to the open-source Python ecosystem (xarray/rioxarray/GDAL, etc.). This work forms part of the author’s MSc dissertation at the University of Leeds.
 
 
 
