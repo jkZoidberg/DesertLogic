@@ -36,10 +36,10 @@ Wan, Y. (2025). DesertLogic: A Fuzzy–Supervaluation Approach for Desertness Cl
 (Add Zenodo DOI here if archived.)
 
 License
-Distributed under the MIT License. See LICENSE for details.
+Distributed under the Apache-2.0 license. See LICENSE for details.
 
 Acknowledgements
-Open data providers (TerraClimate, MODIS) and the open-source Python ecosystem (xarray/rioxarray/GDAL, etc.). This work forms part of the author’s MSc dissertation at the University of Leeds.
+Thanks to the providers of MODIS MOD13A3 NDVI (GEE), ACE2 DEM, TerraClimate, and to the open-source Python ecosystem (xarray/rioxarray/GDAL, etc.). This work forms part of the author’s MSc dissertation at the University of Leeds.
 
 
 
