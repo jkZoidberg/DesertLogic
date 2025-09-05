@@ -1,8 +1,3 @@
-# ace2_batch_convert.py  —— 只保留最必要部分
-# 用法示例（文件末尾也有示例）：
-#   python ace2_batch_convert.py --in-root "F:/.../dedc-ace-v2_15N000E_3sec" --out-root "F:/.../ACE2_TIF" --overwrite
-
-# --- 在导入 rasterio/pyproj 前：为 VSCode/绝对路径运行兜底注入 GDAL/PROJ ---
 import os, sys
 from pathlib import Path
 def _ensure_gdal_proj_env():
@@ -21,15 +16,13 @@ import rasterio
 from rasterio.transform import from_origin
 from rasterio.crs import CRS as _CRS
 
-# ---- 常量 ----
-ROWS, COLS = 18000, 18000                 # 每幅 18000x18000（3″）
-PIX_DEG = 15.0 / ROWS                     # 0.000833333333...
-ACE2_VOID = -32768.0                      # 空洞
-ACE2_SEA_MASK = -500.0                    # 海域掩膜（是否当 nodata 由参数决定）
+ROWS, COLS = 18000, 18000                 
+PIX_DEG = 15.0 / ROWS                    
+ACE2_VOID = -32768.0                     
+ACE2_SEA_MASK = -500.0                    
 _TILE_RE = re.compile(r"(?P<lat>\d{2})(?P<ns>[NS])(?P<lon>\d{3})(?P<ew>[EW])", re.IGNORECASE)
 
 def _crs_wgs84():
-    """优先 EPSG，失败则返回内嵌 WKT（不依赖 proj.db）。"""
     try:
         return _CRS.from_epsg(4326)
     except Exception:
@@ -49,7 +42,6 @@ def _parse_sw_from_token(token: str):
     return float(lat), float(lon)  # (sw_lat, sw_lon)
 
 def _find_tile_token(p: Path):
-    # 文件名优先，找不到再看上级目录
     for part in [p.name] + [q.name for q in p.parents]:
         m = _TILE_RE.search(part.upper())
         if m: return m.group(0)
@@ -68,7 +60,6 @@ def _detect_type(p: Path):
     return None
 
 def _read_ace2_array(bin_path: Path, dtype_name: str) -> np.ndarray:
-    """读取 .ACE2 或 .ACE2.gz 为 (ROWS, COLS) 数组。简洁实现：.gz 走内存解压（如内存不足再换 memmap 版）。"""
     if dtype_name == "HEIGHT":
         dtype = np.dtype("<f4")
     else:
@@ -115,19 +106,18 @@ def _write_geotiff(arr: np.ndarray, sw_lat: float, sw_lon: float, out_path: Path
 
 def main():
     ap = argparse.ArgumentParser(description="Convert ACE2 .ACE2/.ACE2.gz to GeoTIFF (minimal)")
-    ap.add_argument("--in-root",  required=True, help="ACE2 根目录（递归扫描）")
-    ap.add_argument("--out-root", required=True, help="输出根目录")
+    ap.add_argument("--in-root",  required=True, help="ACE2 inroot）")
+    ap.add_argument("--out-root", required=True, help="out root")
     ap.add_argument("--datasets", nargs="*", default=["HEIGHT","SOURCE","QUALITY","CONFIDENCE"],
-                    choices=["HEIGHT","SOURCE","QUALITY","CONFIDENCE"], help="要处理的类型")
-    ap.add_argument("--overwrite", action="store_true", help="存在则覆盖")
-    ap.add_argument("--sea-as-nodata", action="store_true", help="把海域 -500 也视为 nodata")
+                    choices=["HEIGHT","SOURCE","QUALITY","CONFIDENCE"], help="processing variety")
+    ap.add_argument("--overwrite", action="store_true", help="cover")
+    ap.add_argument("--sea-as-nodata", action="store_true", help="treat ocean -500 as nodata")
     args = ap.parse_args()
 
     in_root  = Path(args.in_root).resolve()
     out_root = Path(args.out_root).resolve(); out_root.mkdir(parents=True, exist_ok=True)
     wanted = set(args.datasets)
 
-    # 收集目标
     files = []
     for ext in ("*.ACE2","*.ACE2.GZ","*.ace2","*.ace2.gz"):
         for p in in_root.rglob(ext):
@@ -135,20 +125,19 @@ def main():
             if not t or t not in wanted: continue
             token = _find_tile_token(p)
             if not token: 
-                print(f"[skip] 无法解析瓦片名: {p}"); 
+                print(f"[skip] Unable to parse the tile: {p}"); 
                 continue
             files.append((p, t, token))
 
     if not files:
-        print("未找到可处理文件"); return
-    print(f"[ACE2] 发现 {len(files)} 个文件，开始转换…")
+        print("file not found"); return
+    print(f"[ACE2] find {len(files)} files，start transfer…")
 
-    # 转换
     done = 0
     for src, dtype_name, token in files:
         sw = _parse_sw_from_token(token)
         if not sw:
-            print(f"[skip] 瓦片名无效: {src}"); continue
+            print(f"[skip] invalid name: {src}"); continue
         out_tif = _out_path(src, out_root, dtype_name)
         if out_tif.exists() and not args.overwrite:
             done += 1; continue
@@ -160,16 +149,14 @@ def main():
         except Exception as e:
             print(f"[error] {src} -> {e}")
 
-    print(f"[ACE2] 完成（成功 {done}/{len(files)}）。")
+    print(f"[ACE2] done（successfully {done}/{len(files)}）。")
 
 if __name__ == "__main__":
-    # 你的实际路径（可直接改这里后运行：python ace2_batch_convert.py）
-    # 也可以从命令行传参。
     if len(sys.argv) == 1:
         sys.argv = [
             "ace2_batch_convert.py",
             "--in-root",  r"F:\Leeds\Project\Program\DesertLogic\DEM\dedc-ace-v2_15N000E_3sec",
             "--out-root", r"F:\Leeds\Project\Program\DesertLogic\DEM\ACE2_TIF",
-            "--overwrite"  # 如不想覆盖已有文件，删除这一行
+            "--overwrite" 
         ]
     main()
