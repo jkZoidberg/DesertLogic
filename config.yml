@@ -1,0 +1,33 @@
+region:
+  bbox: [0.0, 28.0, -10.0, 10.0]   # [lat_min, lat_max, lon_min, lon_max]
+  period: ["2018-01", "2020-12"]
+output:
+  dir: out
+
+fuzzy:
+  phi_s: { a: 25.0,  b: 50.0 }  
+  ai_z:  { a: 0.30, b: 0.60 }
+  cwd_s: { a: 200.0, b: 3000.0 }  
+  combine: "(0.2*mu_phi + 0.3*mu_cwd + 0.5*mu_ai) " 
+
+supervaluation:
+  thresholds:
+    supertrue: 0.80
+    superfalse: 0.20
+  alpha: 0.5
+
+  precisifications:
+    phi_s:
+      - {a: 5, b: 20}
+      - {a: 3, b: 30}
+      - {a: 7, b: 25}
+    ai_z:
+      - {a: 0.025, b: 0.13}
+      - {a: 0.030, b: 0.16}
+      - {a: 0.020, b: 0.15}
+    cwd_s:
+      - {a: 1500.0, b: 2000.0}
+      - {a: 1700.0, b: 2200.0}
+      - {a: 1900.0, b: 2500.0}
+
+
